@@ -330,16 +330,6 @@ def load_all_data():
 # Header
 st.title("🇮🇳 India Economic Pulse Dashboard")
 st.markdown('<p class="subtitle">Comprehensive Economic Analysis (2012-2025)</p>', unsafe_allow_html=True)
-# After st.title and subtitle
-st.markdown("""
-    <div style='background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)); 
-                padding: 1.5rem; border-radius: 12px; border-left: 4px solid #667eea; margin-bottom: 2rem;'>
-        <p style='color: #c4b5fd; font-size: 1.1rem; margin: 0;'>
-            📊 <strong>Live Economic Intelligence</strong> | Track India's economic performance through interactive visualizations and real-time data analysis. 
-            Covering GDP growth, inflation trends, trade dynamics, and monetary policy from 2012-2025.
-        </p>
-    </div>
-""", unsafe_allow_html=True)
 
 # Load data
 with st.spinner("⚡ Loading economic data..."):
@@ -438,16 +428,6 @@ latest_forex = forex_data.iloc[-1]
 latest_rbi = rbi_rates_data.iloc[-1]
 
 # Key Metrics Section
-
-# Right after the key metrics
-from datetime import datetime
-
-st.markdown(f"""
-    <div style='text-align: right; color: #8b5cf6; font-size: 0.9rem; margin: 1rem 0;'>
-        🕐 Last updated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}
-    </div>
-""", unsafe_allow_html=True)
-
 st.markdown('<div class="section-header"><span style="font-size: 2rem;">📈</span><h3 style="margin: 0;">Key Economic Indicators</h3></div>', unsafe_allow_html=True)
 
 col1, col2, col3, col4, col5 = st.columns(5)
