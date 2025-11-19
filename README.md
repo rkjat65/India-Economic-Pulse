@@ -1,6 +1,6 @@
-# 🇮🇳 India Economic Pulse Dashboard
+# India Economic Pulse Dashboard
 
-![Dashboard Banner](https://via.placeholder.com/1200x400/667eea/ffffff?text=India+Economic+Pulse+Dashboard)
+![Dashboard Banner](assets/dahbo.png)
 
 > **A comprehensive, real-time economic analytics dashboard tracking India's key economic indicators from 2012-2025**
 
@@ -25,7 +25,7 @@ India Economic Pulse is an interactive data visualization dashboard that consoli
 
 ## 🎯 Live Demo
 
-**[View Live Dashboard →](YOUR-DEPLOYED-URL-HERE)**
+**[View Live Dashboard →](https://india-economic-pulse.streamlit.app/)**
 
 ## 📸 Screenshots
 
@@ -171,7 +171,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Have questions or suggestions? Feel free to reach out!
 
-- **Email**: your.email@example.com
+- **Email**: radhakishanjat65@gmail.com
 - **LinkedIn**: [Connect with me](https://linkedin.com/in/rkjat)
 - **Issues**: [GitHub Issues](https://github.com/rkjat65/india-economic-pulse/issues)
 
