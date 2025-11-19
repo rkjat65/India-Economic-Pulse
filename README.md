@@ -30,13 +30,13 @@ India Economic Pulse is an interactive data visualization dashboard that consoli
 ## 📸 Screenshots
 
 ### Dashboard Overview
-![Dashboard Overview](assets/screenshot_overview.png)
+![Dashboard Overview](assets/dashb.png)
 
 ### GDP Growth Analysis
-![GDP Analysis](assets/screenshot_gdp.png)
+![GDP Analysis](assets/GDP.png)
 
 ### Trade Balance View
-![Trade View](assets/screenshot_trade.png)
+![Trade View](assets/trade.png)
 
 ## 🏗️ Tech Stack
 
@@ -172,7 +172,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Have questions or suggestions? Feel free to reach out!
 
 - **Email**: your.email@example.com
-- **LinkedIn**: [Connect with me](https://linkedin.com/in/yourprofile)
+- **LinkedIn**: [Connect with me](https://linkedin.com/in/rkjat)
 - **Issues**: [GitHub Issues](https://github.com/rkjat65/india-economic-pulse/issues)
 
 ---
