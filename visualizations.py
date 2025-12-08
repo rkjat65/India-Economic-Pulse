@@ -1,64 +1,148 @@
+"""
+Professional-grade visualization functions for Economic Pulse Dashboard
+Enhanced with animations, advanced interactivity, and publication-quality styling
+"""
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 import pandas as pd
+import numpy as np
+from utils import get_color_palette, create_annotation_dict
 
 # Modern Professional Color Palette
-COLORS = {
-    'primary': '#667eea',      # Purple-Blue
-    'secondary': '#764ba2',    # Deep Purple
-    'accent': '#f093fb',       # Light Purple
-    'success': '#10b981',      # Emerald Green
-    'danger': '#ef4444',       # Modern Red
-    'warning': '#f59e0b',      # Amber
-    'info': '#06b6d4',         # Cyan
-    'neutral': '#6b7280',      # Gray
-    'background': '#1a1a2e',   # Dark Blue
-    'surface': '#16213e',      # Darker Blue
-    'text': '#e0e7ff'          # Light Purple-White
+COLORS = get_color_palette('professional')
+
+# Professional chart template
+# Vibrant chart template
+# Premium Portfolio Chart Template
+PROFESSIONAL_TEMPLATE = {
+    'layout': {
+        'template': 'plotly_dark',
+        'paper_bgcolor': 'rgba(0,0,0,0)',
+        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'font': {
+            'color': '#94a3b8',
+            'family': 'Inter, sans-serif',
+            'size': 12
+        },
+        'title_font': {
+            'color': '#f8fafc',
+            'size': 18,
+            'family': 'Inter, sans-serif',
+            'weight': 600
+        },
+        'title_x': 0,
+        'title_xanchor': 'left',
+        'hovermode': 'x unified',
+        'hoverlabel': {
+            'bgcolor': '#1e293b',
+            'bordercolor': '#334155',
+            'font': {'color': '#f8fafc', 'size': 12},
+            'namelength': -1
+        },
+        'xaxis': {
+            'gridcolor': '#334155',
+            'showgrid': True,
+            'zeroline': False,
+            'gridwidth': 0.5
+        },
+        'yaxis': {
+            'gridcolor': '#334155',
+            'showgrid': True,
+            'zeroline': False,
+            'gridwidth': 0.5
+        },
+        'colorway': ['#38bdf8', '#818cf8', '#34d399', '#f87171', '#fbbf24', '#a78bfa']
+    }
 }
 
 def create_gdp_growth_chart(df):
-    """GDP growth rate with moving average"""
+    """Enhanced GDP growth rate chart with moving average and annotations"""
     
     fig = go.Figure()
     
-    # Bars colored by positive/negative
-    colors = ['#2ca02c' if x > 0 else '#d62728' for x in df['GDP_growth']]
+    # Enhanced bars with gradient colors
+    colors = [COLORS['success'] if x > 0 else COLORS['danger'] for x in df['GDP_growth']]
     
     fig.add_trace(go.Bar(
         x=df['date'],
         y=df['GDP_growth'],
         name='GDP Growth (%)',
-        marker=dict(color=colors),
-        opacity=0.7,
-        hovertemplate='<b>%{x|%Y %b}</b><br>Growth: %{y:.2f}%<extra></extra>'
+        marker=dict(
+            color=colors,
+            line=dict(color='rgba(255,255,255,0.1)', width=1),
+            opacity=0.8
+        ),
+        hovertemplate='<b>%{x|%B %Y}</b><br>' +
+                      'Growth Rate: <b>%{y:.2f}%</b><br>' +
+                      '<extra></extra>',
+        showlegend=True
     ))
     
-    # Moving average
+    # Enhanced moving average line
     fig.add_trace(go.Scatter(
         x=df['date'],
         y=df['GDP_growth_ma4'],
-        name='4-Quarter Avg',
-        mode='lines',
-        line=dict(color=COLORS['primary'], width=3),
-        hovertemplate='<b>%{x|%Y %b}</b><br>Avg: %{y:.2f}%<extra></extra>'
+        name='4-Quarter Moving Average',
+        mode='lines+markers',
+        line=dict(
+            color=COLORS['primary'],
+            width=3,
+            shape='spline',
+            smoothing=1.3
+        ),
+        marker=dict(size=6, color=COLORS['primary']),
+        fill='tonexty',
+        fillcolor=f'rgba(102, 126, 234, 0.1)',
+        hovertemplate='<b>%{x|%B %Y}</b><br>' +
+                      'Moving Avg: <b>%{y:.2f}%</b><br>' +
+                      '<extra></extra>'
     ))
     
-    fig.add_hline(y=0, line_dash="solid", line_color="black", line_width=1)
+    # Zero line
+    fig.add_hline(
+        y=0,
+        line_dash="solid",
+        line_color=COLORS['text'],
+        line_width=2,
+        opacity=0.5
+    )
     
+    # Add COVID-19 annotation if in date range
+    covid_date = pd.Timestamp('2020-04-01')
+    if df['date'].min() <= covid_date <= df['date'].max():
+        fig.add_annotation(
+            x=covid_date,
+            y=df[df['date'] <= covid_date]['GDP_growth'].iloc[-1] if len(df[df['date'] <= covid_date]) > 0 else 0,
+            text="COVID-19 Impact",
+            showarrow=True,
+            arrowhead=2,
+            arrowcolor=COLORS['warning'],
+            bgcolor='rgba(245, 158, 11, 0.2)',
+            bordercolor=COLORS['warning'],
+            borderwidth=2,
+            font=dict(size=11, color=COLORS['warning'])
+        )
+    
+    # Update layout with professional template
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='India GDP Growth Rate (Year-over-Year %)',
         xaxis_title='',
         yaxis_title='Growth Rate (%)',
-        hovermode='x unified',
-        height=500,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        height=550,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1,
+            bgcolor='rgba(0,0,0,0)',
+            bordercolor='#e0e0e0',
+            borderwidth=1
+        ),
+        margin=dict(l=50, r=50, t=80, b=50),
+        transition={'duration': 500}
     )
     
     return fig
@@ -91,15 +175,10 @@ def create_gdp_components_growth_chart(df):
     fig.add_hline(y=0, line_dash="dash", line_color="gray")
     
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='GDP Growth Components (All in % Growth Rates)',
         xaxis_title='',
         yaxis_title='Growth Rate (%)',
-        hovermode='x unified',
         height=500
     )
     
@@ -127,11 +206,7 @@ def create_growth_distribution_boxplot(df):
         ))
     
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='Distribution of Growth Rates by Component (2012-2023)',
         yaxis_title='Growth Rate (%)',
         height=450
@@ -168,11 +243,7 @@ def create_quarterly_growth_heatmap(df):
     ))
     
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='GDP Growth Rate Heatmap (% YoY)',
         xaxis_title='Quarter',
         yaxis_title='Fiscal Year',
@@ -182,43 +253,83 @@ def create_quarterly_growth_heatmap(df):
     return fig
 
 def create_inflation_chart(df):
-    """Inflation trends - CPI and WPI"""
+    """Enhanced inflation trends chart with RBI targets"""
     
     fig = go.Figure()
     
+    # CPI Inflation with enhanced styling
     fig.add_trace(go.Scatter(
         x=df['date'],
         y=df['CPI_inflation_yoy'],
         name='CPI Inflation',
-        mode='lines',
-        line=dict(color=COLORS['danger'], width=2),
-        hovertemplate='<b>CPI</b><br>%{y:.2f}%<extra></extra>'
+        mode='lines+markers',
+        line=dict(
+            color=COLORS['danger'],
+            width=3,
+            shape='spline',
+            smoothing=1.3
+        ),
+        marker=dict(size=5, color=COLORS['danger']),
+        fill='tozeroy',
+        fillcolor=f'rgba(239, 68, 68, 0.1)',
+        hovertemplate='<b>CPI Inflation</b><br>' +
+                      '%{x|%B %Y}<br>' +
+                      'Rate: <b>%{y:.2f}%</b><br>' +
+                      '<extra></extra>'
     ))
     
+    # WPI Inflation
     fig.add_trace(go.Scatter(
         x=df['date'],
         y=df['WPI_inflation_yoy'],
         name='WPI Inflation',
-        mode='lines',
-        line=dict(color=COLORS['warning'], width=2),
-        hovertemplate='<b>WPI</b><br>%{y:.2f}%<extra></extra>'
+        mode='lines+markers',
+        line=dict(
+            color=COLORS['warning'],
+            width=3,
+            shape='spline',
+            smoothing=1.3
+        ),
+        marker=dict(size=5, color=COLORS['warning']),
+        hovertemplate='<b>WPI Inflation</b><br>' +
+                      '%{x|%B %Y}<br>' +
+                      'Rate: <b>%{y:.2f}%</b><br>' +
+                      '<extra></extra>'
     ))
     
-    fig.add_hline(y=0, line_dash="dash", line_color="gray")
-    fig.add_hline(y=4, line_dash="dot", line_color="green", annotation_text="RBI Target (4%)")
-    fig.add_hline(y=6, line_dash="dot", line_color="red", annotation_text="Upper Tolerance (6%)")
+    # RBI Target lines
+    fig.add_hline(
+        y=0,
+        line_dash="dash",
+        line_color=COLORS['text'],
+        line_width=1,
+        opacity=0.5
+    )
+    fig.add_hline(
+        y=4,
+        line_dash="dot",
+        line_color=COLORS['success'],
+        line_width=2,
+        annotation_text="RBI Target (4%)",
+        annotation_position="right"
+    )
+    fig.add_hline(
+        y=6,
+        line_dash="dot",
+        line_color=COLORS['danger'],
+        line_width=2,
+        annotation_text="Upper Tolerance (6%)",
+        annotation_position="right"
+    )
     
+    # Update layout
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='Inflation Trends (Year-over-Year %)',
         xaxis_title='',
         yaxis_title='Inflation Rate (%)',
-        hovermode='x unified',
-        height=450
+        height=550,
+        margin=dict(l=50, r=50, t=80, b=50)
     )
     
     return fig
@@ -241,15 +352,10 @@ def create_trade_balance_chart(df):
     fig.add_hline(y=0, line_dash="solid", line_color="black", line_width=1)
     
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='Trade Balance (Exports - Imports) in ₹ Crores',
         xaxis_title='',
         yaxis_title='₹ Crores',
-        hovermode='x',
         height=450,
         annotations=[
             dict(
@@ -310,13 +416,8 @@ def create_exports_imports_chart(df):
     fig.update_yaxes(title_text="Import Cover Ratio", secondary_y=True)
     
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='Exports & Imports Trends',
-        hovermode='x unified',
         height=450
     )
     
@@ -339,15 +440,10 @@ def create_forex_reserves_chart(df):
     ))
     
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='Foreign Exchange Reserves (USD Million)',
         xaxis_title='',
         yaxis_title='USD Million',
-        hovermode='x',
         height=450
     )
     
@@ -378,15 +474,10 @@ def create_rbi_rates_chart(df):
         ))
     
     fig.update_layout(
-        template='plotly_dark',
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(26, 26, 46, 0.5)',
-        font=dict(color='#e0e7ff', family='Inter, sans-serif', size=12),
-        title_font=dict(color='#c4b5fd', size=18, family='Inter'),
+        **PROFESSIONAL_TEMPLATE['layout'],
         title='RBI Policy Rates Over Time',
         xaxis_title='',
         yaxis_title='Rate (%)',
-        hovermode='x unified',
         height=450
     )
     

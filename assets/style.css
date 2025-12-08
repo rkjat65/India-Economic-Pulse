@@ -1,0 +1,182 @@
+/* PREMIUM DATA PORTFOLIO THEME */
+
+/* Google Fonts - Inter for clean, professional look */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Global Variables */
+:root {
+    /* Dark Slate / Navy Portfolio Palette */
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-primary: #38bdf8;
+    /* Sky Blue */
+    --accent-secondary: #818cf8;
+    /* Indigo */
+    --accent-success: #34d399;
+    --accent-danger: #f87171;
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* Base Styles */
+html,
+body,
+[class*="css"] {
+    font-family: 'Inter', sans-serif !important;
+    color: var(--text-primary);
+    background-color: var(--bg-dark);
+}
+
+.stApp {
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.05), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(129, 140, 248, 0.05), transparent 25%);
+    background-attachment: fixed;
+}
+
+/* Typography */
+h1,
+h2,
+h3 {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.5px;
+}
+
+h1 {
+    font-size: 2.5rem !important;
+    background: linear-gradient(to right, #ffffff, #94a3b8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Metric Cards */
+.metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.metric-card:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.metric-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.metric-delta {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    background: rgba(56, 189, 248, 0.1);
+    border-radius: 4px;
+    color: var(--accent-primary);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Custom Filter Container */
+.filter-container {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* Scrollable Checkbox List */
+.scrollable-checkbox-list {
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Scrollbar Styling */
+.scrollable-checkbox-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-checkbox-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.scrollable-checkbox-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.scrollable-checkbox-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Chart Containers */
+.js-plotly-plot {
+    background: var(--bg-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 1.5rem;
+    background-color: transparent;
+    padding: 0 0 1rem 0;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.stTabs [data-baseweb="tab"] {
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: 0.5rem 0;
+    border: none;
+    background: transparent;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    color: var(--text-primary);
+}
+
+.stTabs [aria-selected="true"] {
+    color: var(--accent-primary) !important;
+    border-bottom: 2px solid var(--accent-primary);
+}
+
+/* Intro Banner */
+.intro-banner {
+    border-left: 3px solid var(--accent-primary);
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.1), transparent);
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.intro-banner p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.intro-banner strong {
+    color: var(--text-primary);
+}
