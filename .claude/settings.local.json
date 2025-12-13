@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"c:\\Users\\radha\\Data Analysis\\Economic Pulse\\assets\\css\"\" 2>/dev/null || echo \"CSS directory not found or is empty \")",
+      "Bash(ls:*)",
+      "Bash(python -c:*)",
+      "Bash(python -m py_compile:*)",
+      "Bash(del enhanced_gemini_engine.py image_generation_interface.py watermark_utils.py config.py AI_IMAGE_GENERATION_UPGRADE.md)"
+    ]
+  }
+}

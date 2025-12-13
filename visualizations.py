@@ -1,6 +1,7 @@
 """
 Professional-grade visualization functions for Economic Pulse Dashboard
 Enhanced with animations, advanced interactivity, and publication-quality styling
+AI-powered chart generation and social media integration
 """
 import plotly.graph_objects as go
 import plotly.express as px
@@ -8,142 +9,285 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import numpy as np
 from utils import get_color_palette, create_annotation_dict
+import streamlit as st
+from datetime import datetime
 
 # Modern Professional Color Palette
 COLORS = get_color_palette('professional')
 
-# Professional chart template
-# Vibrant chart template
-# Premium Portfolio Chart Template
+# Enhanced Professional Template with Animations
 PROFESSIONAL_TEMPLATE = {
     'layout': {
         'template': 'plotly_dark',
         'paper_bgcolor': 'rgba(0,0,0,0)',
-        'plot_bgcolor': 'rgba(0,0,0,0)',
+        'plot_bgcolor': 'rgba(30, 41, 59, 0.4)',  # Subtle background
         'font': {
-            'color': '#94a3b8',
-            'family': 'Inter, sans-serif',
-            'size': 12
+            'color': '#e2e8f0',
+            'family': 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+            'size': 13
         },
         'title_font': {
             'color': '#f8fafc',
-            'size': 18,
-            'family': 'Inter, sans-serif',
-            'weight': 600
+            'size': 22,
+            'family': 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+            'weight': 700
         },
-        'title_x': 0,
+        'title_x': 0.02,
         'title_xanchor': 'left',
+        'title_y': 0.95,
         'hovermode': 'x unified',
         'hoverlabel': {
-            'bgcolor': '#1e293b',
-            'bordercolor': '#334155',
-            'font': {'color': '#f8fafc', 'size': 12},
-            'namelength': -1
+            'bgcolor': 'rgba(30, 41, 59, 0.95)',
+            'bordercolor': '#0ea5e9',
+            'font': {'color': '#f8fafc', 'size': 13, 'family': 'Inter'},
+            'namelength': -1,
+            'align': 'left'
         },
         'xaxis': {
-            'gridcolor': '#334155',
+            'gridcolor': 'rgba(51, 65, 85, 0.3)',
             'showgrid': True,
             'zeroline': False,
-            'gridwidth': 0.5
+            'gridwidth': 1,
+            'linecolor': '#475569',
+            'tickcolor': '#64748b',
+            'tickfont': {'color': '#cbd5e1', 'size': 11}
         },
         'yaxis': {
-            'gridcolor': '#334155',
+            'gridcolor': 'rgba(51, 65, 85, 0.3)',
             'showgrid': True,
             'zeroline': False,
-            'gridwidth': 0.5
+            'gridwidth': 1,
+            'linecolor': '#475569',
+            'tickcolor': '#64748b',
+            'tickfont': {'color': '#cbd5e1', 'size': 11}
         },
-        'colorway': ['#38bdf8', '#818cf8', '#34d399', '#f87171', '#fbbf24', '#a78bfa']
+        'colorway': ['#0ea5e9', '#8b5cf6', '#10b981', '#ef4444', '#f59e0b', '#06b6d4', '#ec4899', '#84cc16'],
+        'legend': {
+            'bgcolor': 'rgba(30, 41, 59, 0.8)',
+            'bordercolor': '#475569',
+            'font': {'color': '#e2e8f0', 'size': 12}
+        },
+        'annotations': [],
+        'shapes': []
     }
 }
 
-def create_gdp_growth_chart(df):
-    """Enhanced GDP growth rate chart with moving average and annotations"""
+def add_watermark(fig: go.Figure, twitter_handle: str = "@YourHandle") -> go.Figure:
+    """Add watermark and social media branding to chart"""
+    
+    # Add twitter handle watermark
+    fig.add_annotation(
+        text=twitter_handle,
+        xref="paper", yref="paper",
+        x=0.99, y=0.01,
+        showarrow=False,
+        font=dict(size=11, color='rgba(100, 116, 139, 0.7)', family='Inter'),
+        align="right",
+        bgcolor='rgba(15, 23, 42, 0.8)',
+        bordercolor='rgba(100, 116, 139, 0.3)'
+    )
+    
+    # Add "Economic Pulse" branding
+    fig.add_annotation(
+        text="Economic Pulse Dashboard",
+        xref="paper", yref="paper",
+        x=0.01, y=0.01,
+        showarrow=False,
+        font=dict(size=10, color='rgba(56, 189, 248, 0.8)', family='Inter', weight='bold'),
+        align="left"
+    )
+    
+    # Add timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    fig.add_annotation(
+        text=f"Generated: {timestamp}",
+        xref="paper", yref="paper",
+        x=0.5, y=0.01,
+        showarrow=False,
+        font=dict(size=9, color='rgba(100, 116, 139, 0.6)', family='Inter'),
+        align="center"
+    )
+    
+    return fig
+
+def create_animated_transition(fig: go.Figure) -> go.Figure:
+    """Add smooth animations to chart"""
+    
+    fig.update_layout(
+        transition={'duration': 800, 'easing': 'cubic-in-out'},
+        updatemenus=[{
+            'type': 'buttons',
+            'showactive': False,
+            'buttons': [{
+                'label': '▶ Animate',
+                'method': 'animate',
+                'args': [None, {
+                    'frame': {'duration': 500, 'redraw': True},
+                    'transition': {'duration': 300}
+                }]
+            }]
+        }]
+    )
+    
+    return fig
+
+def create_gdp_growth_chart(df, twitter_handle="@YourHandle"):
+    """Ultra-enhanced GDP growth rate chart with animations and professional styling"""
     
     fig = go.Figure()
     
-    # Enhanced bars with gradient colors
-    colors = [COLORS['success'] if x > 0 else COLORS['danger'] for x in df['GDP_growth']]
+    # Create gradient colors based on performance
+    colors = []
+    for x in df['GDP_growth']:
+        if x > 7:
+            colors.append('#10b981')  # Excellent growth - green
+        elif x > 4:
+            colors.append('#38bdf8')  # Good growth - blue
+        elif x > 0:
+            colors.append('#fbbf24')  # Moderate growth - yellow
+        else:
+            colors.append('#ef4444')  # Negative growth - red
     
+    # Enhanced bars with gradient and glow effect
     fig.add_trace(go.Bar(
         x=df['date'],
         y=df['GDP_growth'],
-        name='GDP Growth (%)',
+        name='GDP Growth Rate',
         marker=dict(
             color=colors,
-            line=dict(color='rgba(255,255,255,0.1)', width=1),
-            opacity=0.8
+            line=dict(color='rgba(255,255,255,0.2)', width=2),
+            opacity=0.85,
+            pattern=dict(
+                shape="",
+                bgcolor="rgba(255,255,255,0.1)",
+                fgcolor="rgba(255,255,255,0.05)"
+            )
         ),
         hovertemplate='<b>%{x|%B %Y}</b><br>' +
-                      'Growth Rate: <b>%{y:.2f}%</b><br>' +
+                      'GDP Growth: <b>%{y:.2f}%</b><br>' +
+                      'Quarter: <b>%{customdata}</b><br>' +
                       '<extra></extra>',
+        customdata=df['quarter'],
         showlegend=True
     ))
     
-    # Enhanced moving average line
+    # Enhanced moving average with area fill
     fig.add_trace(go.Scatter(
         x=df['date'],
         y=df['GDP_growth_ma4'],
         name='4-Quarter Moving Average',
         mode='lines+markers',
         line=dict(
-            color=COLORS['primary'],
-            width=3,
+            color='#818cf8',
+            width=4,
             shape='spline',
             smoothing=1.3
         ),
-        marker=dict(size=6, color=COLORS['primary']),
+        marker=dict(
+            size=8, 
+            color='#818cf8',
+            line=dict(color='white', width=2)
+        ),
         fill='tonexty',
-        fillcolor=f'rgba(102, 126, 234, 0.1)',
+        fillcolor='rgba(129, 140, 248, 0.15)',
         hovertemplate='<b>%{x|%B %Y}</b><br>' +
-                      'Moving Avg: <b>%{y:.2f}%</b><br>' +
+                      'Moving Average: <b>%{y:.2f}%</b><br>' +
                       '<extra></extra>'
     ))
     
-    # Zero line
+    # Add trend line
+    if len(df) > 4:
+        z = np.polyfit(range(len(df)), df['GDP_growth'], 1)
+        trend_line = np.poly1d(z)(range(len(df)))
+        
+        fig.add_trace(go.Scatter(
+            x=df['date'],
+            y=trend_line,
+            name='Trend Line',
+            mode='lines',
+            line=dict(
+                color='rgba(168, 85, 247, 0.8)',
+                width=3,
+                dash='dash'
+            ),
+            hovertemplate='<b>Trend: %{y:.2f}%</b><extra></extra>'
+        ))
+    
+    # Performance zones
+    fig.add_hrect(y0=6, y1=10, fillcolor="rgba(16, 185, 129, 0.1)", 
+                  annotation_text="Excellent Growth Zone", line_width=0)
+    fig.add_hrect(y0=4, y1=6, fillcolor="rgba(56, 189, 248, 0.1)", 
+                  annotation_text="Good Growth Zone", line_width=0)
+    fig.add_hrect(y0=0, y1=4, fillcolor="rgba(251, 191, 36, 0.1)", 
+                  annotation_text="Moderate Growth Zone", line_width=0)
+    fig.add_hrect(y0=-5, y1=0, fillcolor="rgba(239, 68, 68, 0.1)", 
+                  annotation_text="Contraction Zone", line_width=0)
+    
+    # Zero line with emphasis
     fig.add_hline(
         y=0,
         line_dash="solid",
-        line_color=COLORS['text'],
-        line_width=2,
-        opacity=0.5
+        line_color='rgba(255, 255, 255, 0.6)',
+        line_width=3,
+        opacity=0.8
     )
     
-    # Add COVID-19 annotation if in date range
-    covid_date = pd.Timestamp('2020-04-01')
-    if df['date'].min() <= covid_date <= df['date'].max():
-        fig.add_annotation(
-            x=covid_date,
-            y=df[df['date'] <= covid_date]['GDP_growth'].iloc[-1] if len(df[df['date'] <= covid_date]) > 0 else 0,
-            text="COVID-19 Impact",
-            showarrow=True,
-            arrowhead=2,
-            arrowcolor=COLORS['warning'],
-            bgcolor='rgba(245, 158, 11, 0.2)',
-            bordercolor=COLORS['warning'],
-            borderwidth=2,
-            font=dict(size=11, color=COLORS['warning'])
-        )
+    # Add key economic events annotations
+    events = [
+        {'date': '2020-04-01', 'text': 'COVID-19 Lockdown', 'color': '#ef4444'},
+        {'date': '2016-11-01', 'text': 'Demonetization', 'color': '#f59e0b'},
+        {'date': '2017-07-01', 'text': 'GST Launch', 'color': '#8b5cf6'}
+    ]
     
-    # Update layout with professional template
-    fig.update_layout(
-        **PROFESSIONAL_TEMPLATE['layout'],
-        title='India GDP Growth Rate (Year-over-Year %)',
-        xaxis_title='',
-        yaxis_title='Growth Rate (%)',
-        height=550,
-        legend=dict(
+    for event in events:
+        event_date = pd.Timestamp(event['date'])
+        if df['date'].min() <= event_date <= df['date'].max():
+            # Find closest data point
+            closest_idx = (df['date'] - event_date).abs().idxmin()
+            y_pos = df.loc[closest_idx, 'GDP_growth']
+            
+            fig.add_annotation(
+                x=event_date,
+                y=y_pos + 1,
+                text=event['text'],
+                showarrow=True,
+                arrowhead=2,
+                arrowcolor=event['color'],
+                arrowwidth=2,
+                bgcolor=f"rgba{tuple(list(bytes.fromhex(event['color'][1:])) + [0.2])}",
+                bordercolor=event['color'],
+                font=dict(size=11, color=event['color'], weight='bold')
+            )
+    
+    # Update layout with enhanced styling
+    layout_config = PROFESSIONAL_TEMPLATE['layout'].copy()
+    layout_config.update({
+        'title': dict(
+            text='🇮🇳 India GDP Growth Rate - Quarterly Performance Analysis',
+            font=dict(size=24, color='#f8fafc', weight='bold')
+        ),
+        'xaxis_title': 'Timeline',
+        'yaxis_title': 'Growth Rate (%)',
+        'height': 650,
+        'legend': dict(
             orientation="h",
             yanchor="bottom",
             y=1.02,
-            xanchor="right",
-            x=1,
-            bgcolor='rgba(0,0,0,0)',
-            bordercolor='#e0e0e0',
-            borderwidth=1
+            xanchor="center",
+            x=0.5,
+            bgcolor='rgba(30, 41, 59, 0.8)',
+            bordercolor='#475569'
         ),
-        margin=dict(l=50, r=50, t=80, b=50),
-        transition={'duration': 500}
-    )
+        'margin': dict(l=60, r=60, t=100, b=80)
+    })
+    
+    fig.update_layout(**layout_config)
+    
+    # Add watermark and branding
+    fig = add_watermark(fig, twitter_handle)
+    
+    # Add animation
+    fig = create_animated_transition(fig)
     
     return fig
 
@@ -351,21 +495,24 @@ def create_trade_balance_chart(df):
     
     fig.add_hline(y=0, line_dash="solid", line_color="black", line_width=1)
     
-    fig.update_layout(
-        **PROFESSIONAL_TEMPLATE['layout'],
-        title='Trade Balance (Exports - Imports) in ₹ Crores',
-        xaxis_title='',
-        yaxis_title='₹ Crores',
-        height=450,
-        annotations=[
-            dict(
-                text="Surplus" if df['trade_balance_rupees'].iloc[-1] > 0 else "Deficit",
-                xref="paper", yref="paper",
-                x=0.95, y=0.95,
-                showarrow=False,
-                font=dict(size=14, color="green" if df['trade_balance_rupees'].iloc[-1] > 0 else "red")
-            )
-        ]
+    # Create layout config without conflicting annotations
+    layout_config = PROFESSIONAL_TEMPLATE['layout'].copy()
+    layout_config.update({
+        'title': 'Trade Balance (Exports - Imports) in ₹ Crores',
+        'xaxis_title': '',
+        'yaxis_title': '₹ Crores',
+        'height': 450
+    })
+    
+    fig.update_layout(**layout_config)
+    
+    # Add annotation separately
+    fig.add_annotation(
+        text="Surplus" if df['trade_balance_rupees'].iloc[-1] > 0 else "Deficit",
+        xref="paper", yref="paper",
+        x=0.95, y=0.95,
+        showarrow=False,
+        font=dict(size=14, color="green" if df['trade_balance_rupees'].iloc[-1] > 0 else "red")
     )
     
     return fig

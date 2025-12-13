@@ -1,129 +1,150 @@
+"""
+India Economic Pulse - Main Application
+Enhanced with AI Image Generation capability
+"""
+
 import streamlit as st
+from streamlit_option_menu import option_menu
 import pandas as pd
-from utils_ui import load_css, load_all_data
-from views import (
-    render_overview, 
-    render_gdp_view, 
-    render_inflation_view, 
-    render_trade_view, 
-    render_forex_view
-)
 
-# Page Config
+# Import existing modules
+from data_fetcher import load_all_data
+from views import render_gdp_view, render_inflation_view, render_trade_view, render_forex_view, render_overview
+from utils_ui import load_css, render_sidebar
+
+# Import new AI Image Generator
+from ai_image_generator import render_image_generator_ui, add_to_app_sidebar
+
+
+# Page Configuration
 st.set_page_config(
-    page_title="India Economic Pulse",
-    page_icon="🇮🇳",
+    page_title="India Economic Pulse 🇮🇳",
+    page_icon="📊",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
-# Load Styles
+# Apply custom styling
 load_css()
-st.markdown("""
-<style>
-/* Hide default sidebar */
-[data-testid="stSidebar"] {
-    display: none;
-}
-/* Adjust top padding since no sidebar */
-.main .block-container {
-    padding-top: 2rem;
-}
-</style>
-""", unsafe_allow_html=True)
 
-# Load Data
-with st.spinner("🚀 Starting up..."):
-    all_data = load_all_data()
+# Initialize session state
+if 'show_image_generator' not in st.session_state:
+    st.session_state['show_image_generator'] = False
+if 'current_view' not in st.session_state:
+    st.session_state['current_view'] = 'Overview'
 
-# Header
-col1, col2 = st.columns([3, 1])
-with col1:
-    st.title("Economic Pulse")
-    st.markdown("### Transforming Data into Actionable Insights")
-with col2:
-    st.markdown("<br>", unsafe_allow_html=True)
-# Filter Section
-with st.expander("📅 Filter Fiscal Years", expanded=False):
-    st.markdown('<div class="scrollable-checkbox-list">', unsafe_allow_html=True)
-    gdp_data = all_data['gdp']
-    years = sorted(gdp_data['year'].unique(), reverse=True)
-    
-    # Create columns for better layout in expander
-    cols = st.columns(3)
-    selected_years = []
-    
-    for i, year in enumerate(years):
-        with cols[i % 3]:
-            # Default to first 5 years checked
-            if st.checkbox(year, value=(i < 5), key=f"filter_{year}"):
-                selected_years.append(year)
-    
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# Apply global filter logic
-if selected_years:
-    # Filter GDP
-    all_data['gdp'] = all_data['gdp'][all_data['gdp']['year'].isin(selected_years)]
+def main():
+    """Main application logic"""
     
-    # Filter others based on date range of filtered GDP
-    if not all_data['gdp'].empty:
-        min_date = all_data['gdp']['date'].min()
-        max_date = all_data['gdp']['date'].max()
+    # Header
+    st.markdown("""
+        <div style='text-align: center; padding: 1rem 0;'>
+            <h1 style='color: #FF9933; margin: 0;'>🇮🇳 India Economic Pulse</h1>
+            <p style='color: #128807; font-size: 1.1rem; margin-top: 0.5rem;'>
+                Real-time Economic Intelligence Dashboard (2012-2025)
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Load data
+    with st.spinner("📊 Loading economic data..."):
+        raw_data = load_all_data()
+        data = {
+            'gdp': raw_data['GDP'],
+            'inflation': raw_data['Inflation'],
+            'trade': raw_data['Foreign Trade'],
+            'forex': raw_data['Forex Reserves'],
+            'rbi_rates': raw_data['RBI Rates'],
+        }
+
+    
+    # Sidebar Navigation
+    with st.sidebar:
+        st.markdown("### 📌 Navigation")
         
-        all_data['inflation'] = all_data['inflation'][(all_data['inflation']['date'] >= min_date) & 
-                                                      (all_data['inflation']['date'] <= max_date)]
-        all_data['trade'] = all_data['trade'][(all_data['trade']['date'] >= min_date) & 
-                                              (all_data['trade']['date'] <= max_date)]
-        all_data['forex'] = all_data['forex'][(all_data['forex']['date'] >= min_date) & 
-                                              (all_data['forex']['date'] <= max_date)]
-        all_data['rbi_rates'] = all_data['rbi_rates'][(all_data['rbi_rates']['date'] >= min_date) & 
-                                                      (all_data['rbi_rates']['date'] <= max_date)]
-    else:
-         st.warning("No data available for selected period")
-if selected_years:
-    # Filter GDP
-    all_data['gdp'] = all_data['gdp'][all_data['gdp']['year'].isin(selected_years)]
+        selected_view = option_menu(
+            menu_title=None,
+            options=["Overview", "GDP Analysis", "Inflation Tracker", "Trade Dynamics", "Forex & Rates", "AI Image Generator"],
+            icons=["speedometer2", "graph-up-arrow", "fire", "globe-asia-pacific", "currency-exchange", "palette"],
+            menu_icon="cast",
+            default_index=0,
+            styles={
+                "container": {"padding": "0!important", "background-color": "#0E1117"},
+                "icon": {"color": "#FF9933", "font-size": "18px"},
+                "nav-link": {
+                    "font-size": "14px",
+                    "text-align": "left",
+                    "margin": "0px",
+                    "color": "#FAFAFA",
+                    "--hover-color": "#262730",
+                },
+                "nav-link-selected": {"background-color": "#128807"},
+            }
+        )
+        
+        st.session_state['current_view'] = selected_view
+        
+        # Sidebar filters (if not in AI Generator view)
+        if selected_view != "AI Image Generator":
+            render_sidebar()
+        
+        # Quick AI Generator access
+        if selected_view != "AI Image Generator":
+            st.markdown("---")
+            st.markdown("### 🎨 Quick AI Generator")
+            if st.button("🚀 Generate Economic Viz", use_container_width=True, type="primary"):
+                st.session_state['show_image_generator'] = True
+                st.rerun()
+        
+        # Footer
+        st.markdown("---")
+        st.markdown("""
+            <div style='text-align: center; font-size: 0.8rem; color: #888;'>
+                <p><strong>Created by RK Jat</strong></p>
+                <p>
+                    <a href='https://rkjat.in' target='_blank' style='color: #FF9933;'>Website</a> | 
+                    <a href='https://linkedin.com/in/rkjat65' target='_blank' style='color: #FF9933;'>LinkedIn</a> | 
+                    <a href='https://github.com/rkjat65' target='_blank' style='color: #FF9933;'>GitHub</a>
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
     
-    # Filter others based on date range of filtered GDP
-    min_date = all_data['gdp']['date'].min()
-    max_date = all_data['gdp']['date'].max()
+    # Main Content Area
+    if selected_view == "Overview":
+        render_overview(data)
     
-    all_data['inflation'] = all_data['inflation'][(all_data['inflation']['date'] >= min_date) & 
-                                                  (all_data['inflation']['date'] <= max_date)]
-    all_data['trade'] = all_data['trade'][(all_data['trade']['date'] >= min_date) & 
-                                          (all_data['trade']['date'] <= max_date)]
-    # Forex/Rates usually shown as full trend, but let's filter for consistency if desired
-    # or keep them full. User said "filters are enough", implies global filter.
-    all_data['forex'] = all_data['forex'][(all_data['forex']['date'] >= min_date) & 
-                                          (all_data['forex']['date'] <= max_date)]
-    all_data['rbi_rates'] = all_data['rbi_rates'][(all_data['rbi_rates']['date'] >= min_date) & 
-                                                  (all_data['rbi_rates']['date'] <= max_date)]
+    elif selected_view == "GDP Analysis":
+        render_gdp_view(data)
+    
+    elif selected_view == "Inflation Tracker":
+        render_inflation_view(data)
+    
+    elif selected_view == "Trade Dynamics":
+        render_trade_view(data)
+    
+    elif selected_view == "Forex & Rates":
+        render_forex_view(data)
+    
+    elif selected_view == "AI Image Generator":
+        # Full AI Image Generator Interface
+        st.markdown("## 🎨 AI Economic Visualization Generator")
+        st.markdown("""
+            Generate professional economic visualizations, infographics, and social media content 
+            powered by AI. Perfect for presentations, reports, and social media posts.
+        """)
+        
+        # Render the full image generator UI
+        render_image_generator_ui(current_view=st.session_state.get('current_view'))
+    
+    # Show image generator popup if triggered from other views
+    if st.session_state.get('show_image_generator') and selected_view != "AI Image Generator":
+        with st.expander("🎨 AI Image Generator", expanded=True):
+            render_image_generator_ui(current_view=selected_view)
+            if st.button("Close Generator"):
+                st.session_state['show_image_generator'] = False
+                st.rerun()
 
-st.markdown("---")
 
-# Top Navigation Tabs
-tabs = st.tabs(["🏠 Overview", "📊 GDP", "💰 Inflation", "🌐 Trade", "💵 Forex & Rates"])
-
-with tabs[0]:
-    render_overview(all_data)
-
-with tabs[1]:
-    render_gdp_view(all_data)
-
-with tabs[2]:
-    render_inflation_view(all_data)
-
-with tabs[3]:
-    render_trade_view(all_data)
-
-with tabs[4]:
-    render_forex_view(all_data)
-
-# Footer
-st.markdown("---")
-st.markdown("""
-    <div style="text-align: center; color: #888;">
-        Built with ❤️ by RK Jat | Data Sources: MoSPI, RBI, DGCI&S
-    </div>
-""", unsafe_allow_html=True)
+if __name__ == "__main__":
+    main()

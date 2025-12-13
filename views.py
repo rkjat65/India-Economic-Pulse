@@ -74,7 +74,7 @@ def render_overview(all_data):
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("GDP Growth Trend")
-        st.plotly_chart(create_gdp_growth_chart(gdp_data.tail(20)), use_container_width=True, key="overview_gdp")
+        st.plotly_chart(create_gdp_growth_chart(gdp_data.tail(20), "@EconomicPulse"), use_container_width=True, key="overview_gdp")
     with col2:
         st.subheader("Inflation Trend")
         st.plotly_chart(create_inflation_chart(inflation_data.tail(24)), use_container_width=True, key="overview_inflation")
@@ -89,7 +89,7 @@ def render_gdp_view(all_data):
     # Filters handled globally in app.py
     filtered_gdp = gdp_data
         
-    st.plotly_chart(create_gdp_growth_chart(filtered_gdp), use_container_width=True, key="gdp_main")
+    st.plotly_chart(create_gdp_growth_chart(filtered_gdp, "@EconomicPulse"), use_container_width=True, key="gdp_main")
     
     tab1, tab2, tab3 = st.tabs(["Components", "Distribution", "Heatmap"])
     

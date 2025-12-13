@@ -342,3 +342,26 @@ class EconomicDataFetcher:
         print("="*80)
 
         return results
+    
+
+def load_all_data(raw_data_dir='raw_data', cache_dir='data'):
+    """
+    Public API for Streamlit app.
+    Loads and processes all economic datasets.
+    """
+    fetcher = EconomicDataFetcher(
+        raw_data_dir=raw_data_dir,
+        cache_dir=cache_dir
+    )
+    return fetcher.process_all_data()
+
+raw_data = load_all_data()
+
+data = {
+    'gdp': raw_data['GDP'],
+    'inflation': raw_data['Inflation'],
+    'trade': raw_data['Foreign Trade'],
+    'forex': raw_data['Forex Reserves'],
+    'rbi_rates': raw_data['RBI Rates'],
+}
+
