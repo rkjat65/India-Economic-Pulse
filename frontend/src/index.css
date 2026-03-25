@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  html, body {
+    background-color: #0A0A0F;
+    color: #E2E8F0;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0A0A0F; }
+  ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #06B6D4; }
+}
+
+@layer components {
+  .card {
+    @apply bg-card border border-white/[0.07] rounded-xl;
+  }
+
+  .page-header h1 {
+    @apply text-3xl font-bold text-white tracking-tight;
+  }
+  .page-header p {
+    @apply text-muted text-sm mt-1;
+  }
+
+  .filter-select {
+    @apply bg-card border border-white/[0.07] text-white text-sm rounded-lg px-3 py-1.5
+           focus:outline-none focus:border-cyan/50 cursor-pointer appearance-none;
+  }
+
+  .btn-primary {
+    @apply bg-cyan text-black font-semibold text-sm px-4 py-2 rounded-lg
+           hover:bg-cyan-400 transition-colors;
+  }
+
+  .btn-ghost {
+    @apply bg-white/[0.05] border border-white/[0.07] text-white text-sm px-4 py-2 rounded-lg
+           hover:bg-white/[0.09] transition-colors;
+  }
+
+  .table-row {
+    @apply border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors;
+  }
+
+  .badge-positive {
+    @apply bg-green/10 text-green text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+  .badge-negative {
+    @apply bg-red/10 text-red text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+  .badge-neutral {
+    @apply bg-muted/10 text-muted text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+}
+
+/* Recharts custom overrides */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #1E1E2E !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 8px !important;
+  color: #E2E8F0 !important;
+  font-size: 13px !important;
+}
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255,255,255,0.05) !important;
+}
+.recharts-xAxis .recharts-cartesian-axis-tick text,
+.recharts-yAxis .recharts-cartesian-axis-tick text {
+  fill: #64748B !important;
+  font-size: 11px !important;
+}
