@@ -260,8 +260,8 @@ def get_overview():
 
 # ── AI endpoints ─────────────────────────────────────────────
 GEMINI_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_TEXT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-GEMINI_IMG  = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateImages"
+GEMINI_TEXT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent"
+GEMINI_IMG  = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent"
 
 
 class AnalyzeReq(BaseModel):
@@ -271,7 +271,6 @@ class AnalyzeReq(BaseModel):
 
 class ImageReq(BaseModel):
     prompt: str
-    model: str = "imagen-4.0-generate-001"
 
 
 def _build_context(topic: str) -> str:
@@ -344,19 +343,21 @@ async def ai_image(req: ImageReq):
     if not GEMINI_KEY:
         raise HTTPException(500, "GEMINI_API_KEY not set in backend .env")
 
-    url = GEMINI_IMG.format(model=req.model) + f"?key={GEMINI_KEY}"
-    payload = {"prompt": {"text": req.prompt}, "number_of_images": 1}
+    payload = {
+        "contents": [{"parts": [{"text": req.prompt}]}],
+        "generationConfig": {"responseModalities": ["IMAGE", "TEXT"]},
+    }
 
     async with httpx.AsyncClient(timeout=60) as client:
-        r = await client.post(url, json=payload)
+        r = await client.post(f"{GEMINI_IMG}?key={GEMINI_KEY}", json=payload)
         if not r.is_success:
             raise HTTPException(r.status_code, r.json().get("error", {}).get("message", r.text))
 
-    data = r.json()
-    b64 = data.get("generated_images", [{}])[0].get("image", {}).get("image_bytes")
-    if not b64:
-        raise HTTPException(500, "No image returned from Imagen API")
-    return {"image_b64": b64}
+    parts = r.json().get("candidates", [{}])[0].get("content", {}).get("parts", [])
+    for part in parts:
+        if "inlineData" in part:
+            return {"image_b64": part["inlineData"]["data"]}
+    raise HTTPException(500, "No image returned from Gemini image model")
 
 
 # ── Studio data endpoints ─────────────────────────────────────
